@@ -1,10 +1,26 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
     <title>Journal</title>
   </head>
   <body>
-    <h1>Blue</h1>
+    <h1>Gernal</h1>
+    <form>
+      <div class="form-group">
+          <label for="exampleFormControlTextarea1">Title</label>
+          <textarea class="form-control" id="title" rows="1"></textarea>
+        </div>
+        <div class="form-group">
+    <label for="exampleFormControlTextarea1">Content</label>
+    <textarea class="form-control" id="content" rows="3"></textarea>
+  </div>
+  <button id="submit-button" class="btn btn-primary" type="submit" name="button">Submit</button>
+    </form>
+    <div class="journal-container">
+
+    </div>
   </body>
 </html>
