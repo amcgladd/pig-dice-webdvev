@@ -1,80 +1,120 @@
 import './sass/styles.scss';
-// import $ from jquery;
+import './index.html';
+import $ from 'jquery';
+import './assets/images/inverted-dice-1.png';
+import './assets/images/inverted-dice-2.png';
+import './assets/images/inverted-dice-3.png';
+import './assets/images/inverted-dice-4.png';
+import './assets/images/inverted-dice-5.png';
+import './assets/images/inverted-dice-6.png';
+import 'bootstrap';
+
 //BACK END
 
-function Entry(title, content){
-  this.title = title;
-  this.content = content;
-  // this.date = date;
-}
-
-function makeEntry(title, content) {
-  var newEntry = new Entry(title, content);
-  newEntry.words = newEntry.wordCount();
-  newEntry.vowels = newEntry.vowelCount();
-  newEntry.consonants = newEntry.consonantCount();
-  newEntry.teaser = newEntry.getTeaser();
-  return newEntry;
-}
-
-// var titleTest = "Today was Horrible";
-// var contentTest = "Lorem ipsum dolor! sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt bunt in culpa qui officia deserunt mollit anim id est laborum.";
-// var dateTest = "January 15th, 1984";
-
-
-
-Entry.prototype.wordCount = function() {
-  var wordSplit = this.content.split(" ");
-  return wordSplit.length;
+// Business Logic
+var roll = function () {
+  return Math.floor(6 * Math.random()) + 1;
 };
 
-Entry.prototype.vowelCount = function() {
-  var vowels = this.content.match(/[aeiou]/gi);
-  return vowels === null ? 0 : vowels.length;
-};
-
-Entry.prototype.consonantCount = function() {
-  var consonants = this.content.match(/[qwrtyplkjhgfdszxcvbnm]/gi);
-  return consonants === null ? 0 :  consonants.length;
-};
-
-Entry.prototype.getTeaser = function() {
-
-//find the first eight words
-var firstEightArray = this.content.split(" ").slice(0, 8).join(" ").split("");
-//if first eight vontains puncation
-var wordIndex = firstEightArray.findIndex(wordRegex);
-function wordRegex(element){
-  var answer;
-  return answer === null ? 0 :  element.match(/[.!?]/gi);
+function switchPlayer() {
+  $(".player-data").toggle();
+  $(".image-col").html("");
 }
-if ( wordIndex === -1) {
-  return firstEightArray.join("");
-} else {
-  var wordArray = firstEightArray.slice(0, (wordIndex + 1));
-  return wordArray.join("");
+
+function Player(name) {
+  this.roll = 0;
+  this.turnTotal = 0;
+  this.playerTotal = 0;
+  this.name = name;
 }
+
+function diceImageOne(roll) {
+  $("#dice-col-2").html("");
+  if (roll == 1) {
+    $("#dice-col-1").html("<img src='./assets/images/inverted-dice-1.png'>");
+  } else if (roll == 2){
+    $("#dice-col-1").html("<img src='./assets/images/inverted-dice-2.png'>");
+  } else if (roll == 3) {
+    $("#dice-col-1").html("<img src='./assets/images/inverted-dice-3.png'>");
+  } else if (roll == 4) {
+    $("#dice-col-1").html("<img src='./assets/images/inverted-dice-4.png'>");
+  } else if (roll == 5) {
+    $("#dice-col-1").html("<img src='./assets/images/inverted-dice-5.png'>");
+  } else if (roll == 6) {
+    $("#dice-col-1").html("<img src='./assets/images/inverted-dice-6.png'>");
+  }
+}
+
+function diceImageTwo(roll) {
+  $("#dice-col-1").html("");
+  if (roll == 1) {
+    $("#dice-col-2").html("<img src='assets/images/inverted-dice-1.png'>");
+  } else if (roll == 2){
+    $("#dice-col-2").html("<img src='assets/images/inverted-dice-2.png'>");
+  } else if (roll == 3) {
+    $("#dice-col-2").html("<img src='assets/images/inverted-dice-3.png'>");
+  } else if (roll == 4) {
+    $("#dice-col-2").html("<img src='assets/images/inverted-dice-4.png'>");
+  } else if (roll == 5) {
+    $("#dice-col-2").html("<img src='assets/images/inverted-dice-5.png'>");
+  } else if (roll == 6) {
+    $("#dice-col-2").html("<img src='assets/images/inverted-dice-6.png'>");
+  }
+}
+
+Player.prototype.updateTurn = function() {
+  if(this.roll === 1) {
+    this.turnTotal = 0;
+    switchPlayer();
+    this.roll = 0;
+    $("#message").text("You rolled a 1. Switch!");
+  } else if ((this.roll > 1) && (this.roll < 7)) {
+    this.turnTotal += this.roll;
+    $("#message").text("Player " + this.name + " rolled a " + this.roll + "!");
+  }
 };
 
+Player.prototype.hold = function() {
+  this.playerTotal += this.turnTotal;
+  this.roll = 0;
+  this.turnTotal = 0;
+  switchPlayer();
+  $("#progress-" + this.name).css("width", this.playerTotal);
+  if(this.playerTotal >= 10) {
+    $(".winner-modal").text(this.name);
+    $("#myModal").modal('show');
+  }
+};
 
+// User-Interface Logic
+$(document).ready(function() {
+  var player1 = new Player(1);
+  var player2 = new Player(2);
 
-//FRONT END
-$(document).ready(function(){
-  $("#submit-button").click(function(event){
-    event.preventDefault();
-    var title = $("#title").val();
-    var content = $("#content").val();
-    var journalEntry = makeEntry(title, content);
-    $(".journal-container").append('<div class="journal-post card well">' + '<h1 class="title-post card-header">' + journalEntry.title +
-    '</h1><h2 class="teaser-post card-text">' +
-    journalEntry.teaser +
-     '</h2><p class="content-post card-text">' + journalEntry.content +
-      '</p><p class="word-count card-text">Words: ' +  journalEntry.words +
-      '</p><p class="vowel-count card-text">Vowels: ' + journalEntry.vowels +
-      '</p><p class="consonant-count card-text">Consonants: ' +
-      journalEntry.consonants +
-      '</p></div>');
-      $("#title").val('');
-      $("#content").val('');
+  $("#player-one-roll").click(function(){
+    player1.roll = roll();
+    player1.updateTurn();
+    $("#your-roll1").text(player1.roll);
+    $("#turn-total1").text(player1.turnTotal);
+    diceImageOne(player1.roll); //changed
+  });
+  $("#player-one-hold").click(function(){
+    player1.hold();
+    $("#your-roll1").text(0);
+    $("#turn-total1").text(0);
+    $("#player-one-total").text(player1.playerTotal);
+  });
+  $("#player-two-roll").click(function(){
+    player2.roll = roll();
+    player2.updateTurn();
+    $("#your-roll2").text(player2.roll);
+    $("#turn-total2").text(player2.turnTotal);
+    diceImageTwo(player2.roll); //changed
+  });
+  $("#player-two-hold").click(function(){
+    player2.hold();
+    $("#your-roll2").text(0);
+    $("#turn-total2").text(0);
+    $("#player-two-total").text(player2.playerTotal);
   });
 });
